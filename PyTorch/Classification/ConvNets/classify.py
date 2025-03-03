@@ -25,7 +25,7 @@ import torchvision.transforms as transforms
 import torch.cuda.profiler as profiler
 
 import pyprof
-
+pyprof.init()
 from image_classification.models import (
     resnet50,
     resnext101_32x4d,
@@ -37,7 +37,6 @@ from image_classification.models import (
     efficientnet_quant_b0,
     efficientnet_quant_b4,
 )
-pyprof.init()
 
 def available_models():
     models = {
