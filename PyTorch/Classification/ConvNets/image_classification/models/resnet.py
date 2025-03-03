@@ -298,7 +298,7 @@ class ResNet(nn.Module):
                 trt=trt,
                 fused_se=fused_se,
             )
-            if(i in [0,1,24,48):
+            if(i in [0,1,24,48]):
                 nvtx.end_range(start)
             layers.append(layer)
 
