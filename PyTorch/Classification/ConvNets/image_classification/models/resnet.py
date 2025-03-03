@@ -323,6 +323,7 @@ class ResNet(nn.Module):
     def forward(self, x):
         x = self.stem(x)
         for idx, layer in enumerate(self.layers):
+            print(idx)
             if idx in [0,1,24,48]:
                 start = nvtx.start_range(message="layer_"+str(idx), color="green")
             x = layer(x)
