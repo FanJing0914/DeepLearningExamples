@@ -300,21 +300,17 @@ class ResNet(nn.Module):
         self.fc = nn.Linear(arch.widths[-1] * arch.expansion, num_classes)
 
     def stem(self, x):
-        start = nvtx.start_range(message="stem", color="blue")
         x = self.conv1(x)
         if self.bn1 is not None:
             x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
-        nvtx.end_range(start)
         return x
 
     def classifier(self, x):
-        start = nvtx.start_range(message="classifier", color="red")
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
-        nvtx.end_range(start)
         return x
 
     def forward(self, x):
