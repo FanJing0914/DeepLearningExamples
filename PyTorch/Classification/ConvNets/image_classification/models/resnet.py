@@ -322,11 +322,11 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         x = self.stem(x)
-        for(idx, layer in enumerate(self.layers)):
-            if(idx in [0,1,24,48]):
+        for idx, layer in enumerate(self.layers):
+            if idx in [0,1,24,48]:
                 start = nvtx.start_range(message="layer_"+str(idx), color="green")
             x = layer(x)
-            if(idx in [0,1,24,48]):
+            if idx in [0,1,24,48]:
                 nvtx.end_range(start)
         # x = self.layers(x)
         x = self.classifier(x)
