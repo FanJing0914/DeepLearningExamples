@@ -35,7 +35,6 @@ from typing import List, Dict, Callable, Any, Type
 
 import torch
 import torch.nn as nn
-import nvtx
 
 from .common import (
     SqueezeAndExcitation,
@@ -50,7 +49,6 @@ from .model import (
     EntryPoint,
 )
 
-idx_layer = 1 #stem is layer 0
 __all__ = ["ResNet", "resnet_configs"]
 
 # BasicBlock {{{
@@ -147,26 +145,16 @@ class Bottleneck(nn.Module):
             self.squeeze = None
 
     def forward(self, x):
-        global idx_layer
-        start1 = nvtx.start_range(message="layer_"+str(idx_layer), color="green")
         residual = x
 
         out = self.conv1(x)
         out = self.bn1(out)
         out = self.relu(out)
 
-        nvtx.end_range(start1)
-        idx_layer += 1
-        start2 = nvtx.start_range(message="layer_"+str(idx_layer), color="green")
-
         out = self.conv2(out)
         out = self.bn2(out)
         out = self.relu(out)
 
-        nvtx.end_range(start2)
-        idx_layer += 1
-        start3 = nvtx.start_range(message="layer_"+str(idx_layer), color="green")
-        
         out = self.conv3(out)
         out = self.bn3(out)
 
@@ -182,9 +170,6 @@ class Bottleneck(nn.Module):
                 out = residual + out * self.squeeze(out)
 
         out = self.relu(out)
-
-        nvtx.end_range(start3)
-        idx_layer += 1
         return out
 
 
