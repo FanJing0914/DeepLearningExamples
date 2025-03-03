@@ -285,6 +285,8 @@ class ResNet(nn.Module):
         self.num_layers = len(arch.widths)
         layers = []
         for i, (w, l) in enumerate(zip(arch.widths, arch.layers)):
+            if(i in [0,1,24,48]):
+                start = nvtx.start_range(message="layer_"+str(i), color="green")
             layer, inplanes = self._make_layer(
                 arch.block,
                 arch.expansion,
@@ -296,6 +298,8 @@ class ResNet(nn.Module):
                 trt=trt,
                 fused_se=fused_se,
             )
+            if(i in [0,1,24,48):
+                nvtx.end_range(start)
             layers.append(layer)
 
         self.layers = nn.Sequential(*layers)
