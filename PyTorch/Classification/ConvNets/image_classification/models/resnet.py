@@ -50,7 +50,7 @@ from .model import (
     EntryPoint,
 )
 
-idx_layer = 0
+idx_layer = 1 #stem is layer 0
 __all__ = ["ResNet", "resnet_configs"]
 
 # BasicBlock {{{
@@ -157,7 +157,6 @@ class Bottleneck(nn.Module):
 
         nvtx.end_range(start1)
         idx_layer += 1
-        print(idx_layer, "idx layer")
         start2 = nvtx.start_range(message="layer_"+str(idx_layer), color="green")
 
         out = self.conv2(out)
@@ -166,7 +165,6 @@ class Bottleneck(nn.Module):
 
         nvtx.end_range(start2)
         idx_layer += 1
-        print(idx_layer, "idx layer")
         start3 = nvtx.start_range(message="layer_"+str(idx_layer), color="green")
         
         out = self.conv3(out)
@@ -187,7 +185,6 @@ class Bottleneck(nn.Module):
 
         nvtx.end_range(start3)
         idx_layer += 1
-        print(idx_layer, "idx layer")
         return out
 
 
@@ -337,14 +334,7 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         x = self.stem(x)
-        for idx, layer in enumerate(self.layers):
-            print(idx)
-            if idx in [0,1,24,48]:
-                start = nvtx.start_range(message="layer_"+str(idx), color="green")
-            x = layer(x)
-            if idx in [0,1,24,48]:
-                nvtx.end_range(start)
-        # x = self.layers(x)
+        x = self.layers(x)
         x = self.classifier(x)
         return x
 
