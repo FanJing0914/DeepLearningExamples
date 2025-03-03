@@ -147,6 +147,7 @@ class Bottleneck(nn.Module):
             self.squeeze = None
 
     def forward(self, x):
+        global idx_layer
         start = nvtx.start_range(message="layer_"+str(idx_layer), color="green")
         residual = x
 
