@@ -313,9 +313,11 @@ class ResNet(nn.Module):
         return x
 
     def classifier(self, x):
+        start = nvtx.start_range(message="classifier", color="red")
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
+        nvtx.end_range(start)
         return x
 
     def forward(self, x):
@@ -338,7 +340,11 @@ class ResNet(nn.Module):
         output = {}
         x = self.stem(x)
         for l in run:
+            if(l in [0,1,24,48]):
+                start = nvtx.start_range(message="layer_"+str(l), color="red")
             fn = self.layers[l]
+            if(l in [0,1,24,48]):
+                nvtx.end_range(start)
             x = fn(x)
             if f"layer{l+1}" in layers:
                 output[f"layer{l+1}"] = x
