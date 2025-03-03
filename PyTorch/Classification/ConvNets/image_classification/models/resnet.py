@@ -174,7 +174,7 @@ class Bottleneck(nn.Module):
 
         out = self.relu(out)
         nvtx.end_range(start)
-        idx_layer++
+        idx_layer += 1
         print(idx_layer, "idx layer")
         return out
 
