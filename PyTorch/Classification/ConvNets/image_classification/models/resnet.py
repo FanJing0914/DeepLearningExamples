@@ -50,7 +50,7 @@ from .model import (
     EntryPoint,
 )
 
-
+idx_layer = 0
 __all__ = ["ResNet", "resnet_configs"]
 
 # BasicBlock {{{
@@ -147,6 +147,7 @@ class Bottleneck(nn.Module):
             self.squeeze = None
 
     def forward(self, x):
+        start = nvtx.start_range(message="layer_"+str(idx_layer), color="green")
         residual = x
 
         out = self.conv1(x)
@@ -172,7 +173,9 @@ class Bottleneck(nn.Module):
                 out = residual + out * self.squeeze(out)
 
         out = self.relu(out)
-
+        nvtx.end_range(start)
+        idx_layer++
+        print(idx_layer, "idx layer")
         return out
 
 
@@ -285,7 +288,6 @@ class ResNet(nn.Module):
         self.num_layers = len(arch.widths)
         layers = []
         for i, (w, l) in enumerate(zip(arch.widths, arch.layers)):
-            print("append layer:", i)
             layer, inplanes = self._make_layer(
                 arch.block,
                 arch.expansion,
