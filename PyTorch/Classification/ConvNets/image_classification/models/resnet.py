@@ -285,8 +285,6 @@ class ResNet(nn.Module):
         self.num_layers = len(arch.widths)
         layers = []
         for i, (w, l) in enumerate(zip(arch.widths, arch.layers)):
-            if(i in [0,1,24,48]):
-                start = nvtx.start_range(message="layer_"+str(i), color="green")
             layer, inplanes = self._make_layer(
                 arch.block,
                 arch.expansion,
@@ -298,8 +296,6 @@ class ResNet(nn.Module):
                 trt=trt,
                 fused_se=fused_se,
             )
-            if(i in [0,1,24,48]):
-                nvtx.end_range(start)
             layers.append(layer)
 
         self.layers = nn.Sequential(*layers)
@@ -326,7 +322,13 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         x = self.stem(x)
-        x = self.layers(x)
+        for(idx, layer in enumerate(self.layers)):
+            if(idx in [0,1,24,48]):
+                start = nvtx.start_range(message="layer_"+str(idx), color="green")
+            x = layer(x)
+            if(idx in [0,1,24,48]):
+                nvtx.end_range(start)
+        # x = self.layers(x)
         x = self.classifier(x)
         return x
 
@@ -344,11 +346,7 @@ class ResNet(nn.Module):
         output = {}
         x = self.stem(x)
         for idx,l in enumerate(run):
-            if(idx in [0,1,24,48]):
-                start = nvtx.start_range(message="layer_"+str(l), color="red")
             fn = self.layers[l]
-            if(idx in [0,1,24,48]):
-                nvtx.end_range(start)
             x = fn(x)
             if f"layer{l+1}" in layers:
                 output[f"layer{l+1}"] = x
