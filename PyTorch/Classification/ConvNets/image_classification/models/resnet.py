@@ -148,17 +148,27 @@ class Bottleneck(nn.Module):
 
     def forward(self, x):
         global idx_layer
-        start = nvtx.start_range(message="layer_"+str(idx_layer), color="green")
+        start1 = nvtx.start_range(message="layer_"+str(idx_layer), color="green")
         residual = x
 
         out = self.conv1(x)
         out = self.bn1(out)
         out = self.relu(out)
 
+        nvtx.end_range(start1)
+        idx_layer += 1
+        print(idx_layer, "idx layer")
+        start2 = nvtx.start_range(message="layer_"+str(idx_layer), color="green")
+
         out = self.conv2(out)
         out = self.bn2(out)
         out = self.relu(out)
 
+        nvtx.end_range(start2)
+        idx_layer += 1
+        print(idx_layer, "idx layer")
+        start3 = nvtx.start_range(message="layer_"+str(idx_layer), color="green")
+        
         out = self.conv3(out)
         out = self.bn3(out)
 
@@ -174,7 +184,8 @@ class Bottleneck(nn.Module):
                 out = residual + out * self.squeeze(out)
 
         out = self.relu(out)
-        nvtx.end_range(start)
+
+        nvtx.end_range(start3)
         idx_layer += 1
         print(idx_layer, "idx layer")
         return out
