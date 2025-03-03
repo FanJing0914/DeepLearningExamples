@@ -285,6 +285,7 @@ class ResNet(nn.Module):
         self.num_layers = len(arch.widths)
         layers = []
         for i, (w, l) in enumerate(zip(arch.widths, arch.layers)):
+            print("append layer:", i)
             layer, inplanes = self._make_layer(
                 arch.block,
                 arch.expansion,
