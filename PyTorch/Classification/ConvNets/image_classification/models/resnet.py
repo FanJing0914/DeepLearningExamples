@@ -35,6 +35,7 @@ from typing import List, Dict, Callable, Any, Type
 
 import torch
 import torch.nn as nn
+import nvtx
 
 from .common import (
     SqueezeAndExcitation,
@@ -302,11 +303,13 @@ class ResNet(nn.Module):
         self.fc = nn.Linear(arch.widths[-1] * arch.expansion, num_classes)
 
     def stem(self, x):
+        start = nvtx.start_range(message="stem", color="blue")
         x = self.conv1(x)
         if self.bn1 is not None:
             x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
+        nvtx.end_range(start)
         return x
 
     def classifier(self, x):
