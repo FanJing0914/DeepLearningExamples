@@ -339,11 +339,11 @@ class ResNet(nn.Module):
 
         output = {}
         x = self.stem(x)
-        for l in run:
-            if(l in [0,1,24,48]):
+        for idx,l in enumerate(run):
+            if(idx in [0,1,24,48]):
                 start = nvtx.start_range(message="layer_"+str(l), color="red")
             fn = self.layers[l]
-            if(l in [0,1,24,48]):
+            if(idx in [0,1,24,48]):
                 nvtx.end_range(start)
             x = fn(x)
             if f"layer{l+1}" in layers:
