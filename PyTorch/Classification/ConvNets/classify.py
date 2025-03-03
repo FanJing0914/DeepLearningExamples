@@ -136,11 +136,10 @@ def main(args, model_args):
     model.eval()
 
     input = load_jpeg_from_file(args.image, args.image_size, cuda=not args.cpu)
-
+    profiler.start()
     with torch.no_grad(), autocast(enabled=args.precision == "AMP"):
-        profiler.start()
         output = torch.nn.functional.softmax(model(input), dim=1)
-        profiler.stop()
+    profiler.stop()
 
     output = output.float().cpu().view(-1).numpy()
     top5 = np.argsort(output)[-5:][::-1]
